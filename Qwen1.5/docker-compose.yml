@@ -25,6 +25,3 @@ services:
     volumes:
       - ../Qwen1.5-0.5B-Chat:/models
     command: python3 -m vllm.entrypoints.openai.api_server --served-model-name Qwen1.5-0.5B-Chat --model /models
-    
-    
-# http://192.168.31.132:6901/?password=vncpassword
