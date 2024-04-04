@@ -17,4 +17,4 @@ services:
     restart: always
     volumes:
       - ../Qwen1.5-0.5B-Chat:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name Qwen1.5-0.5B-Chat --model /models
+    command: sh /fastchat.sh
