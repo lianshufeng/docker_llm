@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+
+  qwen1.5:
+    build:
+      # args:
+        # http_proxy: http://192.168.31.98:1080
+        # https_proxy: http://192.168.31.98:1080
+      context: ./
+      dockerfile: Dockerfile
+    image: lianshufeng/qwen:1.5-cuda12.1
+    ports:
+      - "8000:8000"
+    privileged: true
+    container_name: qwen1.5
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - ../Qwen1.5-0.5B-Chat:/models
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name Qwen1.5-0.5B-Chat --model /models
+    
+    
+# http://192.168.31.132:6901/?password=vncpassword

@@ -1,0 +1,20 @@
+ARG from=ubuntu:22.04
+
+FROM ${from} as base
+
+
+RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
+    git \
+    git-lfs \
+    python3 \
+    python3-pip \
+    python3-dev \
+    wget \
+    curl \
+    vim \
+&& rm -rf /var/lib/apt/lists/*
+
+# torch
+RUN pip3 install torch torchvision torchaudio
+# transformers vLLM
+RUN pip3 install transformers>=4.37.0 vLLM>=0.3.0
