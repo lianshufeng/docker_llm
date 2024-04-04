@@ -23,4 +23,4 @@ RUN pip3 install torch torchvision torchaudio --index-url https://download.pytor
 RUN pip3 install transformers>=4.37.0 --no-cache
 
 # vLLM
-RUN pip3 vLLM>=0.3.0 --no-cache
+RUN pip3 install vLLM>=0.3.0 --no-cache
