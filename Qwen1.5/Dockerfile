@@ -17,10 +17,10 @@ RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
 && rm -rf /var/lib/apt/lists/*
 
 # torch
-RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 ; rm -rf /var/cache/pip /usr/local/lib/python*/*/site-packages/*pip* 
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --no-cache
 
 # transformers 
-RUN pip3 install transformers>=4.37.0 ; rm -rf /var/cache/pip /usr/local/lib/python*/*/site-packages/*pip* 
+RUN pip3 install transformers>=4.37.0 --no-cache
 
 # vLLM
-RUN pip3 vLLM>=0.3.0 ; rm -rf /var/cache/pip /usr/local/lib/python*/*/site-packages/*pip* 
+RUN pip3 vLLM>=0.3.0 --no-cache
