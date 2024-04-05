@@ -23,5 +23,7 @@ services:
               count: 1
               capabilities: [gpu]
     volumes:
-      - ../Qwen1.5-0.5B-Chat:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models
+      - ../../../huggingface/Qwen/Qwen1.5-7B-Chat-AWQ:/models
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models --max-model-len 3000 --gpu-memory-utilization 0.95
+    
+# docker-compose down && docker-compose up --build

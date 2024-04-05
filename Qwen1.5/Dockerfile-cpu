@@ -18,7 +18,7 @@ RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --no-cache
 
 # transformers 
-RUN pip3 install transformers>=4.37.0 --no-cache
+RUN pip install git+https://github.com/huggingface/transformers
 
 
 # fastchat cpu
@@ -26,5 +26,4 @@ RUN pip3 install "fschat[model_worker]"==0.2.36 --no-cache
 RUN pip uninstall pydantic -y #fix pydantic
 RUN pip install pydantic==1.10.11 --no-cache
 
-# script
-ADD ./fastchat.sh /fastchat.sh
+
