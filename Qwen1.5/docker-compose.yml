@@ -4,9 +4,9 @@ services:
 
   qwen1.5:
     build:
-      # args:
-        # http_proxy: http://192.168.31.98:1080
-        # https_proxy: http://192.168.31.98:1080
+      args:
+        http_proxy: http://192.168.31.98:1080
+        https_proxy: http://192.168.31.98:1080
       context: ./
       dockerfile: Dockerfile
     image: lianshufeng/qwen:1.5-cuda12.1
@@ -23,7 +23,7 @@ services:
               count: 1
               capabilities: [gpu]
     volumes:
-      - ../../../huggingface/Qwen/Qwen1.5-14B-Chat-GPTQ-Int4:/models
+      - ../../../huggingface/Qwen/Qwen1.5-MoE-A2.7B-Chat:/models
     command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models --max-model-len 800 --gpu-memory-utilization 0.95
     
 # docker-compose down && docker-compose up --build

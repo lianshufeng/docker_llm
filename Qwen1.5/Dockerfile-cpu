@@ -12,6 +12,8 @@ RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
     wget \
     curl \
     vim \
+	gcc \
+	g++ \
 && rm -rf /var/lib/apt/lists/*
 
 # torch

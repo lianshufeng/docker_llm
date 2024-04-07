@@ -14,13 +14,14 @@ RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
     wget \
     curl \
     vim \
+	gcc \
+	g++ \
 && rm -rf /var/lib/apt/lists/*
 
 # torch
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --no-cache
 
 # transformers 
-# RUN pip3 install transformers>=4.37.0 --no-cache
 RUN pip install git+https://github.com/huggingface/transformers
 
 # vLLM
