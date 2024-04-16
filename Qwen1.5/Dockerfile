@@ -25,8 +25,11 @@ RUN pip install git+https://github.com/huggingface/transformers
 # vLLM
 RUN pip3 install vLLM>=0.3.0 --no-cache
 
-# fschat
-RUN pip3 install --no-cache fschat[model_worker]==0.2.36
+# fschat pydantic 老版本BUG
+RUN pip3 install --no-cache fschat[model_worker]==0.2.36  pydantic==1.10.11
 
 # gptq
 RUN pip3 install --no-cache "optimum==1.17.1" "auto-gptq==0.7.1" 
+
+# autoawq
+RUN pip3 install --no-cache autoawq 
