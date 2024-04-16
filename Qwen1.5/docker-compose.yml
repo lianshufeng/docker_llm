@@ -23,11 +23,13 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 2
+              count: 1
               capabilities: [gpu]
     volumes:
-      - ../../../huggingface/Qwen/Qwen1.5-16B-Chat-AWQ:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.99 --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000
+      - ../../../huggingface/Qwen/Qwen1.5-32B-Chat-AWQ:/models
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.98  --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000
+
+# --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000
 # --max-model-len 3000 --max-parallel-loading-workers 1 --swap-space 4 
 
     # fastchat

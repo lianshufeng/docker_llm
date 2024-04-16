@@ -20,16 +20,21 @@ RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --no-cache
 
 # transformers 
-RUN pip install git+https://github.com/huggingface/transformers
+RUN pip3 install git+https://github.com/huggingface/transformers
 
 # vLLM
 RUN pip3 install vLLM>=0.3.0 --no-cache
 
-# fschat pydantic 老版本BUG
-RUN pip3 install --no-cache fschat[model_worker]==0.2.36  pydantic==1.10.11
+# fschat pydantic 
+RUN pip3 install "fschat[model_worker]"==0.2.36 --no-cache
 
 # gptq
 RUN pip3 install --no-cache "optimum==1.17.1" "auto-gptq==0.7.1" 
 
 # autoawq
 RUN pip3 install --no-cache autoawq 
+
+
+#fix pydantic
+#RUN pip3 uninstall pydantic -y 
+#RUN pip3 install pydantic==1.10.11 --no-cache
