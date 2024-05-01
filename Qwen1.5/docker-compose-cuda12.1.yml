@@ -8,26 +8,27 @@ services:
         http_proxy: http://192.168.31.98:1080
         https_proxy: http://192.168.31.98:1080
       context: ./
-      dockerfile: Dockerfile
-    image: lianshufeng/qwen:1.5-cuda12.1
-    shm_size: 6.15g
+      dockerfile: Dockerfile-cuda12.1
+    image: lianshufeng/llm:qwen-1.5-cuda12.1
+    # shm_size: 6.15g
     ports:
       - "8000:8000"
     privileged: true
-    container_name: qwen1.5
+    container_name: qwen-1.5-cuda12.1
     restart: always
-    # environment:
-      # - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:21
+    environment:
+      - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
+      # - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
+              count: 2
               capabilities: [gpu]
     volumes:
-      - ../../../huggingface/Qwen/Qwen1.5-32B-Chat-AWQ:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.98  --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000
+      - ../../../huggingface/Qwen/Qwen1.5-14B-Chat:/models
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.98   --tensor-parallel-size 1 --max-model-len 800  --swap-space 2  --dtype half
 
 # --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000
 # --max-model-len 3000 --max-parallel-loading-workers 1 --swap-space 4 
@@ -37,4 +38,4 @@ services:
     
 
  
-# docker-compose down && docker-compose up --build
+# docker-compose -f docker-compose-cuda12.1.yml down && docker-compose -f docker-compose-cuda12.1.yml up --build

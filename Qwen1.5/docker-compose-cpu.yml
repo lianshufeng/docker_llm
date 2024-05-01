@@ -9,7 +9,7 @@ services:
         # https_proxy: http://192.168.31.98:1080
       context: ./
       dockerfile: Dockerfile-cpu
-    image: lianshufeng/qwen:1.5-cpu
+    image: lianshufeng/llm:qwen-1.5-cpu
     ports:
       - "8000:8000"
     privileged: true
