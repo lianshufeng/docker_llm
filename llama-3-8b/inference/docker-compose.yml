@@ -10,14 +10,14 @@ services:
       context: ./
       dockerfile: Dockerfile
     image: lianshufeng/llm:llama-3-8b-cuda12.1
-    # shm_size: 6.15g
+    shm_size: 6.15g
     ports:
       - "8000:8000"
     privileged: true
     container_name: llama-3-inference
     restart: unless-stopped
     environment:
-      - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
+      - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
       # - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256
     deploy:
       resources:
@@ -29,9 +29,9 @@ services:
     volumes:
       - ../train/store/outputs/merged:/models
       # - E:/git/huggingface/meta-llama/Meta-Llama-3-8B-Instruct:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 1 --max-model-len 1000  --swap-space 2  --dtype half
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 2 --max-model-len 1000 --dtype half --disable-custom-all-reduce
     
     
 # docker-compose down && docker-compose up --build
-
 # api:   "stop":"<|eot_id|>",
+# 多卡： --disable-custom-all-reduce && shm_size: 6.15g
