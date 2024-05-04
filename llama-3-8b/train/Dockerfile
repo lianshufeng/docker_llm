@@ -48,7 +48,6 @@ RUN pip3 install "unsloth[cu121] @ git+https://github.com/unslothai/unsloth.git"
 # Use this for new GPUs like Ampere, Hopper GPUs (RTX 30xx, RTX 40xx, A100, H100, L40)
 # RUN pip3 install --no-deps packaging ninja einops flash-attn xformers trl peft accelerate bitsandbytes
 
-
 # Use this for older GPUs (V100, Tesla T4, RTX 20xx)
-RUN pip3 install --no-deps xformers trl peft accelerate bitsandbytes
+RUN pip3 install --no-deps "xformers<0.0.26" trl peft accelerate bitsandbytes
 

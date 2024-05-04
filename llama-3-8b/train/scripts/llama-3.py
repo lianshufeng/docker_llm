@@ -130,7 +130,7 @@ trainer = SFTTrainer(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=5,
-        max_steps=4000, #60
+        max_steps=5000, #60
         learning_rate=2e-4,
         fp16=not torch.cuda.is_bf16_supported(),
         bf16=torch.cuda.is_bf16_supported(),
@@ -146,8 +146,13 @@ trainer = SFTTrainer(
 #
 # 验证推理
 #
-print('train ...')
-trainer_stats = trainer.train(resume_from_checkpoint = True) #检查点开始训练
+def has_checkpoint(directory):
+    files = os.listdir(directory)
+    checkpoint_files = [file for file in files if file.startswith('checkpoint-')]
+    return len(checkpoint_files) > 0
+checkpoint = has_checkpoint('/outputs')
+print('train - resume_from_checkpoint : ' + str(checkpoint))
+trainer_stats = trainer.train(resume_from_checkpoint = checkpoint ) #检查点开始训练
 print(trainer_stats)
 
 #
