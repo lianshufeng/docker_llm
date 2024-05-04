@@ -9,7 +9,7 @@ services:
         https_proxy: http://192.168.31.98:1080
       context: ./
       dockerfile: Dockerfile
-    image: lianshufeng/llm:llama-3-8b-cuda12.1
+    image: lianshufeng/llm:llama-3-inference
     shm_size: 6.15g
     ports:
       - "8000:8000"
