@@ -10,9 +10,9 @@ services:
       context: ./
       dockerfile: Dockerfile-cuda12.1
     image: lianshufeng/llm:qwen-1.5-cuda12.1
-    # shm_size: 6.15g
+    shm_size: 6.15g
     ports:
-      - "8000:8000"
+      - "8080:8000"
     privileged: true
     container_name: qwen-1.5-cuda12.1
     restart: always
@@ -24,12 +24,15 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 2
+              count: "all"
               capabilities: [gpu]
     volumes:
-      - ../../../huggingface/Qwen/Qwen1.5-14B-Chat:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.98   --tensor-parallel-size 1 --max-model-len 800  --swap-space 2  --dtype half
+      - ../../../huggingface/Qwen/Qwen1.5-14B-Chat-AWQ:/models
+      # - E:\git\github\docker_llm\llama-3-8b\train\store\outputs\merged:/models
+      # - E:\git\github\LLaMA-Factory\store\output\qwen-7b-xl:/models
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 1 --max-model-len 8000 --dtype half --disable-custom-all-reduce 
 
+# --disable-custom-all-reduce
 # --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000
 # --max-model-len 3000 --max-parallel-loading-workers 1 --swap-space 4 
 

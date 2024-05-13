@@ -12,7 +12,7 @@ services:
     image: lianshufeng/llm:llama-3-inference
     shm_size: 6.15g
     ports:
-      - "8000:8000"
+      - "8080:8000"
     privileged: true
     container_name: llama-3-inference
     restart: unless-stopped
@@ -29,7 +29,7 @@ services:
     volumes:
       - ../train/store/outputs/merged:/models
       # - E:/git/huggingface/meta-llama/Meta-Llama-3-8B-Instruct:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 2 --max-model-len 1000 --dtype half --disable-custom-all-reduce
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.97   --tensor-parallel-size 2 --max-model-len 8000 --dtype half --disable-custom-all-reduce
     
     
 # docker-compose down && docker-compose up --build

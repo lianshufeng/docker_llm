@@ -39,7 +39,7 @@ services:
       - ./store/.cache/huggingface:/root/.cache/huggingface
       - ./store/datasets/hf:/datasets/hf
       - ./store/outputs:/outputs
-      - E:/git/modelscope/deepctrl-sft-data:/datasets/train #数据集
+      - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
     command: python3 /scripts/llama-3.py
 
 
