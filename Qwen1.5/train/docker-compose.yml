@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+
+  llama3:
+    build:
+      args:
+        http_proxy: http://192.168.31.98:1080
+        https_proxy: http://192.168.31.98:1080
+      context: ./
+      dockerfile: Dockerfile
+    image: lianshufeng/llm:Qwen-1.5-train
+    # shm_size: 6.15g
+    privileged: true
+    container_name: qwen-train
+    # restart: always
+    environment:
+      # - http_proxy=http://192.168.31.98:1080
+      # - https_proxy=http://192.168.31.98:1080
+      - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
+      
+      #- HF_TOKEN=hf_* #token
+      - HF_ENDPOINT=https://hf-mirror.com #镜像代理
+      
+      # 模型
+      - model_name=unsloth/llama-3-8b-Instruct-bnb-4bit #nsloth/llama-3-70b-bnb-4bit #unsloth/llama-3-8b-Instruct-bnb-4bit
+      
+      # 保存模型
+      - merged_method=merged_16bit
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: "all"
+              capabilities: [gpu]
+    volumes:
+      - ./scripts:/scripts
+      - ./store/.cache/huggingface:/root/.cache/huggingface
+      - ./store/datasets/hf:/datasets/hf
+      - ./store/outputs:/outputs
+      - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
+    command: python3 /scripts/llama-3.py
+
+
+
+
+# docker-compose build --no-cache
+# docker-compose down && docker-compose up --build 

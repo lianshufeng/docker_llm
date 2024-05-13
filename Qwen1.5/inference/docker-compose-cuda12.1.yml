@@ -27,7 +27,7 @@ services:
               count: "all"
               capabilities: [gpu]
     volumes:
-      - ../../../huggingface/Qwen/Qwen1.5-14B-Chat-AWQ:/models
+      - ../../../../huggingface/Qwen/Qwen1.5-14B-Chat-AWQ:/models
       # - E:\git\github\docker_llm\llama-3-8b\train\store\outputs\merged:/models
       # - E:\git\github\LLaMA-Factory\store\output\qwen-7b-xl:/models
     command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 1 --max-model-len 8000 --dtype half --disable-custom-all-reduce 
