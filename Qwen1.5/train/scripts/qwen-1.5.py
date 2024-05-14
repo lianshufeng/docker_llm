@@ -30,10 +30,14 @@ fourbit_models = [
 ]  # More models at https://huggingface.co/unsloth
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name=org_model_name,
-    max_seq_length=max_seq_length,
-    dtype=dtype,
-    load_in_4bit=load_in_4bit,
-    token=hf_token
+    max_seq_length=4096,
+    dtype=None,
+    load_in_4bit=True,
+    token=hf_token,
+    device_map     = "sequential",
+    rope_scaling   = None, # Qwen2 does not support RoPE scaling
+    fix_tokenizer  = True,
+    trust_remote_code = False
 )
 
 #
@@ -130,7 +134,7 @@ trainer = SFTTrainer(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=5,
-        max_steps=200, #60
+        max_steps=60, #60
         learning_rate=2e-4,
         fp16=not torch.cuda.is_bf16_supported(),
         bf16=torch.cuda.is_bf16_supported(),

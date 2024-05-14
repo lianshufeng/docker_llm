@@ -23,7 +23,11 @@ services:
       - HF_ENDPOINT=https://hf-mirror.com #镜像代理
       
       # 模型
-      - model_name=unsloth/llama-3-8b-Instruct-bnb-4bit #nsloth/llama-3-70b-bnb-4bit #unsloth/llama-3-8b-Instruct-bnb-4bit
+      # - model_name=unsloth/llama-3-8b-Instruct-bnb-4bit #unsloth/llama-3-8b-Instruct-bnb-4bit
+      
+      #训练的模型
+      # - model_name=unsloth/llama-3-8b-Instruct-bnb-4bit
+      - model_name=Qwen/Qwen1.5-7B-Chat
       
       # 保存模型
       - merged_method=merged_16bit
@@ -39,8 +43,9 @@ services:
       - ./store/.cache/huggingface:/root/.cache/huggingface
       - ./store/datasets/hf:/datasets/hf
       - ./store/outputs:/outputs
+      - E:/git/huggingface/Qwen/Qwen1.5-7B-Chat:/model
       - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
-    command: python3 /scripts/llama-3.py
+    command: python3 /scripts/qwen-1.5.py
 
 
 

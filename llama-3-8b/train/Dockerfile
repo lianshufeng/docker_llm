@@ -21,7 +21,7 @@ RUN pip install --upgrade pip
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --no-cache
 
 # unsloth
-RUN pip3 install "unsloth[cu121] @ git+https://github.com/unslothai/unsloth.git"
+RUN pip3 install "unsloth[cu121] @ git+https://github.com/lianshufeng/unsloth.git"
 
 RUN pip3 install --no-deps "xformers<0.0.26" trl peft accelerate bitsandbytes
 
