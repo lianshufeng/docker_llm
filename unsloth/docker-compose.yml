@@ -9,10 +9,10 @@ services:
         https_proxy: http://192.168.31.98:1080
       context: ./
       dockerfile: Dockerfile
-    image: lianshufeng/llm:llama-3-train
+    image: lianshufeng/llm:unsloth
     # shm_size: 6.15g
     privileged: true
-    container_name: llama3
+    container_name: unsloth-train
     # restart: always
     environment:
       # - http_proxy=http://192.168.31.98:1080
@@ -23,7 +23,8 @@ services:
       - HF_ENDPOINT=https://hf-mirror.com #镜像代理
       
       # 模型
-      - model_name=unsloth/llama-3-8b-Instruct-bnb-4bit #nsloth/llama-3-70b-bnb-4bit #unsloth/llama-3-8b-Instruct-bnb-4bit
+      - model_name=unsloth/Phi-3-mini-4k-instruct
+      # - model_bane=unsloth/llama-3-8b-Instruct-bnb-4bit
       
       # 保存模型
       - merged_method=merged_16bit
@@ -32,7 +33,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 2
+              count: "all"
               capabilities: [gpu]
     volumes:
       - ./scripts:/scripts
@@ -40,7 +41,7 @@ services:
       - ./store/datasets/hf:/datasets/hf
       - ./store/outputs:/outputs
       - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
-    command: python3 /scripts/llama-3.py
+    command: python3 /scripts/Phi-3.py
 
 
 

@@ -30,7 +30,7 @@ services:
       - model_name=Qwen/Qwen1.5-7B-Chat
       
       # 保存模型
-      - merged_method=merged_16bit
+      - merged_method=merged_4bit
     deploy:
       resources:
         reservations:
