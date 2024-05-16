@@ -1,6 +1,4 @@
-ARG from=ubuntu:22.04
-
-FROM ${from} as base
+FROM ubuntu:22.04 as base
 
 
 RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \

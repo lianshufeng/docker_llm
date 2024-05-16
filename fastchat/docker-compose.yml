@@ -2,21 +2,22 @@ version: "3"
 
 services:
 
-  qwen1.5-cpu:
+  fastchat-cpu:
     build:
       # args:
         # http_proxy: http://192.168.31.98:1080
         # https_proxy: http://192.168.31.98:1080
       context: ./
       dockerfile: Dockerfile-cpu
-    image: lianshufeng/llm:qwen-1.5-cpu
+    image: lianshufeng/llm:fastchat-cpu
     ports:
-      - "8000:8000"
+      - "8080:8000"
     privileged: true
-    container_name: qwen1.5-cpu
+    container_name: fastchat-cpu
     restart: always
     volumes:
-      - ../../../huggingface/Qwen/Qwen1.5-MoE-A2.7B:/models
+      # - ../../../huggingface/Qwen/Qwen1.5-MoE-A2.7B:/models
+      - ../unsloth/store\outputs\merged:/models
     command: bash -c "nohup python3 -m fastchat.serve.controller --host 0.0.0.0 & nohup python3 -m fastchat.serve.model_worker --model-names "gpt-3.5-turbo,Qwen1.5" --model-path /models --device cpu --host 0.0.0.0 & nohup python3 -m fastchat.serve.openai_api_server --host 0.0.0.0 --port 8000"
     
 # docker-compose -f docker-compose-cpu.yml down && docker-compose -f docker-compose-cpu.yml up --build
