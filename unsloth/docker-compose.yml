@@ -23,8 +23,9 @@ services:
       - HF_ENDPOINT=https://hf-mirror.com #镜像代理
       
       # 模型
-      - model_name=unsloth/Phi-3-mini-4k-instruct
-      # - model_bane=unsloth/llama-3-8b-Instruct-bnb-4bit
+      # - model_name=unsloth/Phi-3-mini-4k-instruct
+      # - model_name=Qwen/Qwen1.5-7B-Chat
+      - model_name=unsloth/llama-3-8b-Instruct-bnb-4bit
       
       # 保存模型
       - merged_method=merged_16bit
@@ -41,7 +42,9 @@ services:
       - ./store/datasets/hf:/datasets/hf
       - ./store/outputs:/outputs
       - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
-    command: python3 /scripts/Phi-3.py
+    # command: python3 /scripts/Phi-3.py
+    # command: python3 /scripts/qwen-1.5.py
+    command: python3 /scripts/llama-3.py
 
 
 

@@ -4,7 +4,6 @@ hf_token = os.environ.get('HF_TOKEN')
 hf_token = None if hf_token == None else hf_token
 
 org_model_name = os.environ.get('model_name')
-org_model_name = 'unsloth/llama-3-8b-bnb-4bit' if org_model_name == None else org_model_name
 
 #
 # 加载模型
