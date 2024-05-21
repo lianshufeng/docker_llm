@@ -23,5 +23,5 @@ RUN pip3 install torch torchvision torchaudio --index-url https://download.pytor
 # unsloth
 RUN pip3 install "unsloth[cu121] @ git+https://github.com/unslothai/unsloth"
 
-pip install --no-deps trl peft accelerate bitsandbytes
+RUN pip3 install --no-deps trl peft accelerate bitsandbytes
 
