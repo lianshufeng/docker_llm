@@ -2,7 +2,7 @@ version: "3"
 
 services:
 
-  qwen1.5:
+  vllm:
     build:
       args:
         http_proxy: http://192.168.31.98:1080
@@ -14,7 +14,7 @@ services:
     ports:
       - "8080:8000"
     privileged: true
-    container_name: qwen-1.5-cuda12.1
+    container_name: vllm-1.5-cuda12.1
     restart: always
     environment:
       - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
@@ -32,7 +32,7 @@ services:
         # - ../../../../huggingface/Qwen/Qwen1.5-7B-Chat:/models
       # - E:\git\github\docker_llm\llama-3-8b\train\store\outputs\merged:/models
       # - E:\git\github\LLaMA-Factory\store\output\qwen-7b-xl:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 1 --max-model-len 6000 --dtype float16 --disable-custom-all-reduce 
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 1 --max-model-len 1000 --dtype float16 --disable-custom-all-reduce 
 
 # --disable-custom-all-reduce
 # --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000

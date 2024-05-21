@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  llama-factory:
+    build:
+      args:
+        http_proxy: http://192.168.31.98:1080
+        https_proxy: http://192.168.31.98:1080
+      dockerfile: Dockerfile
+      context: .
+    container_name: llama_factory
+    volumes:
+      - ./data:/app/data
+      - ./store/config:/app/config
+      - ./store/output:/app/output
+      - ./store/hf_cache:/root/.cache/huggingface/
+      - E:/git/huggingface/Qwen/Qwen1.5-7B-Chat:/model
+    environment:
+      - CUDA_VISIBLE_DEVICES=1
+      - HF_ENDPOINT=https://hf-mirror.com
+      # - http_proxy=http://192.168.31.98:1080
+      # - https_proxy=http://192.168.31.98:1080
+    ports:
+      - "7860:7860"
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: "all"
+            capabilities: [gpu]
+    restart: unless-stopped
