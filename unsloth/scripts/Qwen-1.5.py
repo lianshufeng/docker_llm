@@ -117,6 +117,7 @@ else:
 print('SFTTrainer ...');
 from trl import SFTTrainer
 from transformers import TrainingArguments
+from unsloth import is_bfloat16_supported
 
 trainer = SFTTrainer(
     model=model,
@@ -132,8 +133,8 @@ trainer = SFTTrainer(
         # warmup_steps=5,
         # max_steps=60, #60
         # learning_rate=2e-4,
-        # fp16=not torch.cuda.is_bf16_supported(),
-        # bf16=torch.cuda.is_bf16_supported(),
+        # fp16 = not is_bfloat16_supported(),
+        # bf16 = is_bfloat16_supported(),
         # logging_steps=1,
         # optim="paged_adamw_32bit", #Qwen paged_adamw_32bit
         # weight_decay=0.01,
