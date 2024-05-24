@@ -17,7 +17,7 @@ services:
     environment:
       # - http_proxy=http://192.168.31.98:1080
       # - https_proxy=http://192.168.31.98:1080
-      - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
+      - CUDA_VISIBLE_DEVICES=0 # 多卡 0,1
       
       #- HF_TOKEN=hf_* #token
       - HF_ENDPOINT=https://hf-mirror.com #镜像代理
@@ -42,9 +42,9 @@ services:
       - ./store/.cache/huggingface:/root/.cache/huggingface
       - ./store/datasets/hf:/datasets/hf
       - ./store/outputs:/outputs
-      # - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
+      - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
       # - E:/git/huggingface/yunfeng/datasets:/datasets/train
-      - E:/git/huggingface/yahma/alpaca-cleaned:/datasets/train
+      # - E:/git/huggingface/yahma/alpaca-cleaned:/datasets/train
     # command: python3 /scripts/Phi-3.py
     command: python3 /scripts/Qwen-1.5.py
     # command: python3 /scripts/llama-3.py
