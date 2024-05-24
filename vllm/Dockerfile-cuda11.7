@@ -22,8 +22,9 @@ RUN pip3 install torch torchvision torchaudio --index-url https://download.pytor
 # transformers 
 RUN pip3 install git+https://github.com/huggingface/transformers
 
-# vLLM
-RUN pip3 install vLLM>=0.3.0 --no-cache
+# vLLM RUN pip3 install vLLM>=0.3.0 
+# Build from source
+RUN git clone https://github.com/vllm-project/vllm.git /vllm && cd vllm && pip install -e . 
 
 # fschat pydantic 
 RUN pip3 install "fschat[model_worker]"==0.2.36 --no-cache

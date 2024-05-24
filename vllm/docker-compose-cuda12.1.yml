@@ -17,7 +17,7 @@ services:
     container_name: vllm-1.5-cuda12.1
     restart: always
     environment:
-      - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
+      - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
       # - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256
     deploy:
       resources:
@@ -32,7 +32,7 @@ services:
         # - ../../../../huggingface/Qwen/Qwen1.5-7B-Chat:/models
       # - E:\git\github\docker_llm\llama-3-8b\train\store\outputs\merged:/models
       # - E:\git\github\LLaMA-Factory\store\output\qwen-7b-xl:/models
-    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.8   --tensor-parallel-size 2 --max-model-len 4000 --dtype float16 --disable-custom-all-reduce 
+    command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.9   --tensor-parallel-size 1 --max-model-len 4000 --dtype float16 --disable-custom-all-reduce 
 
 # --disable-custom-all-reduce
 # --swap-space 2  --tensor-parallel-size 1 --max-parallel-loading-workers 1 --max-model-len 3000
@@ -42,5 +42,5 @@ services:
     # command: bash -c "nohup python3 -m fastchat.serve.controller --host 0.0.0.0 & nohup python3 -m fastchat.serve.model_worker --model-names "gpt-3.5-turbo,Qwen1.5" --model-path /models --device cuda --num-gpus 2 --debug DEBUG --host 0.0.0.0 & nohup python3 -m fastchat.serve.openai_api_server --host 0.0.0.0 --port 8000"
     
 
- 
+# docker build -f Dockerfile-cuda12.1 ./ -t lianshufeng/llm:vllm-cuda12.1
 # docker-compose -f docker-compose-cuda12.1.yml down && docker-compose -f docker-compose-cuda12.1.yml up --build
