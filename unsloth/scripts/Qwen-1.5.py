@@ -4,7 +4,7 @@ hf_token = os.environ.get('HF_TOKEN')
 hf_token = None if hf_token == None else hf_token
 
 org_model_name = os.environ.get('model_name')
-max_seq_length=2048
+max_seq_length=1024
 #
 # 加载模型
 #
@@ -51,7 +51,7 @@ model = FastLanguageModel.get_peft_model(
     # [NEW] "unsloth" uses 30% less VRAM, fits 2x larger batch sizes!
     use_gradient_checkpointing="unsloth",  # True or "unsloth" for very long context
     random_state=3407,
-    use_rslora=False,  # We support rank stabilized LoRA
+    use_rslora=True,  # We support rank stabilized LoRA
     loftq_config=None,  # And LoftQ
 )
 

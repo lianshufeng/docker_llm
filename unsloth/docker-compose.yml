@@ -27,7 +27,7 @@ services:
       # - model_name=Qwen/Qwen1.5-7B-Chat
       - model_name=YeungNLP/firefly-qwen1.5-en-7b-unsloth
       # - model_name=unsloth/llama-3-8b-Instruct-bnb-4bit
-      
+      # - model_name=/model
       # 保存模型
       - merged_method=merged_16bit
     deploy:
@@ -42,6 +42,7 @@ services:
       - ./store/.cache/huggingface:/root/.cache/huggingface
       - ./store/datasets/hf:/datasets/hf
       - ./store/outputs:/outputs
+      # - E:/git/huggingface/Qwen/Qwen1.5-7B-Chat:/model #本地模型
       - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
       # - E:/git/huggingface/yunfeng/datasets:/datasets/train
       # - E:/git/huggingface/yahma/alpaca-cleaned:/datasets/train
