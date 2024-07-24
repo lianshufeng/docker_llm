@@ -143,7 +143,8 @@ trainer = SFTTrainer(
         optim= "paged_adamw_32bit",
         lr_scheduler_type= "constant_with_warmup",
         warmup_steps= 5,
-        max_steps= 120,
+        max_steps= 600,
+        # num_train_epochs=200,
         # lora_rank= 64,
         # lora_alpha= 16,
         # lora_dropout= 0.05,
@@ -169,20 +170,19 @@ print(trainer_stats)
 #
 # 推理模型
 #
-print('train ...')
-# alpaca_prompt = Copied from above
-FastLanguageModel.for_inference(model)  # Enable native 2x faster inference
-inputs = tokenizer(
-    [
-        alpaca_prompt.format(
-            "Continue the fibonnaci sequence.",  # instruction
-            "1, 1, 2, 3, 5, 8",  # input
-            "",  # output - leave this blank for generation!
-        )
-    ], return_tensors="pt").to("cuda")
+# print('train ...')
+# FastLanguageModel.for_inference(model) # Enable native 2x faster inference
+# inputs = tokenizer(
+# [
+    # alpaca_prompt.format(
+        # "Continue the fibonnaci sequence.", # instruction
+        # "1, 1, 2, 3, 5, 8", # input
+        # "", # output - leave this blank for generation!
+    # )
+# ], return_tensors = "pt").to("cuda")
 
-outputs = model.generate(**inputs, max_new_tokens=64, use_cache=True)
-tokenizer.batch_decode(outputs)
+# outputs = model.generate(**inputs, max_new_tokens = 64, use_cache = True)
+# tokenizer.batch_decode(outputs)
 
 #
 # 保存模型

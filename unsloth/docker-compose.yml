@@ -1,8 +1,5 @@
-version: "3"
-
 services:
-
-  unsloth:
+  unsloth_build:
     build:
       args:
         http_proxy: http://192.168.31.98:1080
@@ -43,9 +40,10 @@ services:
       - ./store/datasets/hf:/datasets/hf
       - ./store/outputs:/outputs
       # - E:/git/huggingface/Qwen/Qwen1.5-7B-Chat:/model #本地模型
+      # - E:/git/huggingface/Qwen/Qwen2-7B-Instruct:/model #本地模型
       - E:/git/huggingface/Qwen/Qwen2-7B-Instruct:/model #本地模型
-      - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
-      # - E:/git/huggingface/yunfeng/datasets:/datasets/train
+      # - E:/git/huggingface/BelleGroup/train_0.5M_CN:/datasets/train #数据集
+      - E:\git\huggingface\yunfeng\datasets_min:/datasets/train
       # - E:/git/huggingface/yahma/alpaca-cleaned:/datasets/train
     # command: python3 /scripts/Phi-3.py
     command: python3 /scripts/Qwen-2.py

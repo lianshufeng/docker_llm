@@ -23,10 +23,13 @@ RUN pip install torch torchvision torchaudio --index-url https://download.pytorc
 RUN pip install git+https://github.com/huggingface/transformers
 
 # vLLM 
-RUN pip install --no-cache "vllm>=0.4.3" 
+RUN pip install --no-cache "vllm==0.5.2" 
+
+# 卸载 
+# RUN pip uninstall flash-attn
 
 # fschat gptq autoawq
-RUN pip install --no-cache "fschat[model_worker]>=0.2.36"  "optimum>=1.17.1" "auto-gptq>=0.7.1" "autoawq"
+# RUN pip install --no-cache "fschat[model_worker]>=0.2.36"  "optimum>=1.17.1" "auto-gptq>=0.7.1" "autoawq"
 
 # fschat pydantic 
 #RUN pip install "fschat[model_worker]"==0.2.36 --no-cache
