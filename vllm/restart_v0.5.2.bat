@@ -1,0 +1,1 @@
+docker-compose -f docker-compose-v0.5.2.yml down && docker-compose -f docker-compose-v0.5.2.yml up -d
