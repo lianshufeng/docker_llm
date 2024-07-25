@@ -11,7 +11,7 @@ services:
     container_name: vllm-1.5-cuda12.1
     restart: always
     environment:
-      - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
+      - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
       - NCCL_IGNORE_DISABLED_P2P=1
       # - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:256
     deploy:
@@ -29,7 +29,7 @@ services:
       # - E:\git\github\docker_llm\llama-3-8b\train\store\outputs\merged:/models
       # - E:\git\github\LLaMA-Factory\store\output\qwen-7b-xl:/models
     # command: --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.95 --tensor-parallel-size 1 --max-model-len 4000 --dtype float16 --disable-custom-all-reduce 
-    command: --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.99 --dtype float16 --tensor-parallel-size 2 --disable-custom-all-reduce --max-model-len 1000 
+    command: --served-model-name gpt-3.5-turbo --model /models  --gpu-memory-utilization 0.95 --dtype float16 --tensor-parallel-size 1 --disable-custom-all-reduce --max-model-len 4000 
     # command: python3 -m vllm.entrypoints.openai.api_server --served-model-name gpt-3.5-turbo --model /models 
 
 # --disable-custom-all-reduce
