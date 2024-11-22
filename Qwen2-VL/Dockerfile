@@ -48,7 +48,7 @@ RUN pip3 install --no-cache-dir git+https://github.com/huggingface/transformers@
     && pip3 install --no-cache-dir accelerate \
     && pip3 install --no-cache-dir qwen-vl-utils
 
-RUN mkdir -p /Qwen2-src
+RUN mkdir -p /Qwen2-VL
 RUN wget https://github.com/QwenLM/Qwen2-VL/archive/refs/heads/main.zip -O /master.zip 
 RUN unzip /master.zip -d /
 RUN cp -rf /Qwen2-VL-main/* /Qwen2-VL/
