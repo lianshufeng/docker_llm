@@ -11,6 +11,7 @@ RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
     python3-pip \
     python3-dev \
     wget \
+	unzip \
     curl \
     vim \
 	gcc \
