@@ -4,16 +4,20 @@ ARG from=nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04
 FROM ${from} as base
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends \
+RUN apt update -y && apt upgrade -y && apt install -y --no-install-recommends  \
     git \
     git-lfs \
     python3 \
     python3-pip \
     python3-dev \
     wget \
+    curl \
     vim \
+	gcc \
+	g++ \
     libsndfile1 \
-    rm -rf /var/lib/apt/lists/*
+&& rm -rf /var/lib/apt/lists/*
+	
 
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.26.1/cmake-3.26.1-Linux-x86_64.sh \
     -q -O /tmp/cmake-install.sh \
