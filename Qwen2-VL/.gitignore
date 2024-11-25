@@ -1,3 +1,2 @@
-
-# models
-model.gguf
+/models
+__pycache__

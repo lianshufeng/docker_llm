@@ -1,0 +1,13 @@
+qwen-vl-utils
+git+https://github.com/huggingface/transformers.git
+Flask
+accelerate
+av
+
+optimum
+auto-gptq
+
+autoawq
+
+
+# flash-attn==2.6.1

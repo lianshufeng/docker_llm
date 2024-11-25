@@ -5,12 +5,21 @@ services:
         http_proxy: http://192.168.31.98:1080
         https_proxy: http://192.168.31.98:1080
       context: ./
-      dockerfile: Dockerfile  
+      dockerfile: Dockerfile
     image: lianshufeng/llm:Qwen2-VL
     container_name: Qwen2-VL
-    # volumes:
-      # - ./model.gguf:/model.gguf
-    # restart: always
-    # ports:
-      # - "8080:8080"
-    # command: -m /model.gguf --port 8080 --host 0.0.0.0 -n 4096
+    volumes:
+      - ./models:/models
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - CUDA_VISIBLE_DEVICES=1 # 多卡 0,1
+    command: python server.py
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: "all"
+              capabilities: [gpu]
