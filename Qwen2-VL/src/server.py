@@ -58,7 +58,7 @@ def compatibleModeV1():
     try:
         data = request.get_json()
         messages = data.get('messages', [])
-        print(messages)
+        # print(messages)
 
         text = processor.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
