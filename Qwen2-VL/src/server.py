@@ -1,9 +1,8 @@
-import os
-
-from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
-from qwen_vl_utils import process_vision_info
 from argparse import ArgumentParser
+
 from flask import Flask, request, jsonify
+from qwen_vl_utils import process_vision_info
+from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
 app = Flask(__name__)
 
@@ -23,10 +22,10 @@ def _get_args():
                         type=str,
                         default='/models',
                         help='Checkpoint name or path, default to %(default)r')
-    parser.add_argument('--devices',
+    parser.add_argument('--device',
                         type=str,
-                        default='0',
-                        help='CUDA_VISIBLE_DEVICES')
+                        default='cuda',
+                        help='cuda or cpu')
 
     parser.add_argument('--min-pixels',
                         type=int,
@@ -68,7 +67,7 @@ def compatibleModeV1():
             padding=True,
             return_tensors="pt",
         )
-        inputs = inputs.to("cuda")
+        inputs = inputs.to(device=args.device)
 
         # Inference: Generation of the output
         generated_ids = model.generate(**inputs, max_new_tokens=args.max_new_tokens)
@@ -88,7 +87,6 @@ def compatibleModeV1():
 if __name__ == '__main__':
     global args
     args = _get_args()
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.devices
 
     load_model()
     app.run(debug=False, port=args.server_port, host=args.server_name)
