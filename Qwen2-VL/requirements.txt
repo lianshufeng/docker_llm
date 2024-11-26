@@ -1,6 +1,7 @@
 qwen-vl-utils
 git+https://github.com/huggingface/transformers.git
 Flask
+flask_cors
 accelerate
 av
 

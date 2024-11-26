@@ -10,6 +10,7 @@ services:
     container_name: Qwen2-VL
     volumes:
       - ./models:/models
+#      - ./src:/opt/app
     restart: always
     ports:
       - "8000:8000"

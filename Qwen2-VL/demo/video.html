@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Demo</title>
+    <style>
+        #video {
+            width: 320px;
+            height: 240px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<h1>Camera Stream to Base64</h1>
+<p>
+    <video id="video" autoplay playsinline></video>
+    <button id="startBtn">开始</button>
+</p>
+<p>
+    <span>
+        <label>提示词</label>
+        <input type="text" value="中文描述视频内容" id="tips"/>
+    </span>
+
+</p>
+<p>
+    <textarea id="status" style="width: 600px;height: 100px"></textarea>
+</p>
+
+
+<script>
+    const video = document.getElementById('video');
+    const status = document.getElementById('status');
+
+
+    // Access the device camera and stream to video element
+    navigator.mediaDevices.getUserMedia({video: true})
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(err => {
+            console.error("An error occurred: " + err);
+        });
+
+</script>
+
+<script>
+    const cameraBuff = [];
+    (() => {
+        // 定时获取摄像头数据
+        setInterval(() => {
+            let canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            let dataURL = canvas.toDataURL('image/png');
+            // dataURL 有数据才加入数组
+            if (dataURL.length <= 'data:,'.length) {
+                return;
+            }
+            cameraBuff.push(dataURL);
+            if (cameraBuff.length > 30) {
+                cameraBuff.shift();
+            }
+            //释放这个 canvas
+            canvas = null;
+        }, 1000)
+    })()
+</script>
+
+<script>
+    (() => {
+        let latestAccessTime = new Date().getTime();
+        let request = function (spaceTime) {
+            // 取整
+            let count = Math.floor(spaceTime / 1000);
+            if (count > 15) {
+                count = 15;
+            }
+            let buff = [];
+            // 取出最后几帧
+            for (let i = 0; i < count; i++) {
+                let dataURL = cameraBuff[cameraBuff.length - 1 - count + i];
+                //let dataURL = cameraBuff[cameraBuff.length - 1 - i];
+                if (dataURL) {
+                    buff.push(dataURL);
+                }
+            }
+
+            let messages = {
+                messages: [
+                    {
+                        "role": "user",
+                        "content": []
+                    }
+                ]
+            }
+
+
+            if (buff && buff.length > 0) {
+                messages.messages[0].content.push({
+                    "type": "video",
+                    "video": buff,
+                    "fps": 1.0,
+                })
+            }
+            messages.messages[0].content.push({
+                "type": "text",
+                "text": document.getElementById('tips').value
+            })
+
+
+            latestAccessTime = new Date().getTime();
+            window.fetch(
+                'http://127.0.0.1:8000/compatible-mode/v1',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(messages)
+                }
+            ).then(async res => {
+                let data = await res.json();
+                document.getElementById('status').innerHTML = JSON.stringify(data);
+                //递归调用
+                request(new Date().getTime() - latestAccessTime + 1000);
+            }).catch(err => {
+                console.error(err)
+            });
+        }
+
+        // 开始网络请求
+        document.getElementById('startBtn').onclick = function () {
+            this.disabled = true;
+            // 请求
+            request(1000);
+        }
+
+    })()
+</script>
+
+</body>
+</html>

@@ -1,6 +1,8 @@
+import threading
 from argparse import ArgumentParser
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import cross_origin
 from qwen_vl_utils import process_vision_info
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
@@ -47,7 +49,10 @@ def _get_args():
     return parser.parse_args()
 
 
+
+
 @app.route('/compatible-mode/v1', methods=['POST'])
+@cross_origin()
 def compatibleModeV1():
     global model, processor, args
     try:
@@ -88,5 +93,7 @@ if __name__ == '__main__':
     global args
     args = _get_args()
 
+    # 启动一个线程载入模型
+    # threading.Thread(target=load_model).start()
     load_model()
     app.run(debug=False, port=args.server_port, host=args.server_name)
