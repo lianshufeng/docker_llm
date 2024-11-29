@@ -1,4 +1,5 @@
 import threading
+import uuid
 from argparse import ArgumentParser
 
 from flask import Flask, request, jsonify, send_from_directory
@@ -82,6 +83,25 @@ def compatibleModeV1():
         output_text = processor.batch_decode(
             generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
         )
+
+        # 定义一个dic
+        output_text = {
+            "id": "chatcmpl-"+str(uuid.uuid4()),
+            "choices": [
+                {
+                    "finish_reason": "stop",
+                    "index": 0,
+                    "logprobs": None,
+                    "message": {
+                        "content": output_text[0],
+                        "role": "assistant",
+                        "function_call": None,
+                        "tool_calls": None
+                    }
+                }
+            ]
+        }
+
         print(output_text)
         return jsonify(output_text), 200
     except Exception as e:
