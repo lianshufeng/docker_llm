@@ -6,7 +6,7 @@ services:
         https_proxy: http://192.168.31.98:1080
       context: ./
       dockerfile: Dockerfile
-    image: lianshufeng/llm:yolo
+    image: lianshufeng/llm:yolo-gpu
     container_name: yolo
     volumes:
       - ./models.pt:/opt/src/models.pt
@@ -16,7 +16,7 @@ services:
     environment:
       - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
     working_dir: /opt/src
-    command: python app.py --device=cuda
+    command: python app.py --device=cuda #cpu
     deploy:
       resources:
         reservations:

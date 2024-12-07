@@ -21,7 +21,7 @@ def _get_args():
     parser = ArgumentParser()
     parser.add_argument('--model',
                         type=str,
-                        default='./yolo11s.pt',
+                        default='./models.pt',
                         help='Checkpoint name or path, default to %(default)r')
     parser.add_argument('--device',
                         type=str,
