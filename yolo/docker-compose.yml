@@ -1,0 +1,26 @@
+services:
+  yolo:
+    build:
+      args:
+        http_proxy: http://192.168.31.98:1080
+        https_proxy: http://192.168.31.98:1080
+      context: ./
+      dockerfile: Dockerfile
+    image: lianshufeng/llm:yolo
+    container_name: yolo
+    volumes:
+      - ./models.pt:/opt/src/models.pt
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
+    working_dir: /opt/src
+    command: python app.py --device=cuda --model=./yolo11m.pt
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: "all"
+              capabilities: [gpu]
