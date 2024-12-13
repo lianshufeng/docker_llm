@@ -1,9 +1,10 @@
-ARG UBUNTU_VERSION=22.04
+ARG ONEAPI_VERSION=2025.0.0-0-devel-ubuntu22.04
 
-FROM ubuntu:$UBUNTU_VERSION AS build
+FROM intel/oneapi-basekit:$ONEAPI_VERSION AS build
 
+ARG GGML_SYCL_F16=OFF
 RUN apt-get update && \
-    apt-get install -y build-essential git libcurl4-openssl-dev
+    apt-get install -y git libcurl4-openssl-dev
 
 WORKDIR /app
 
@@ -12,16 +13,20 @@ RUN wget https://github.com/ggerganov/llama.cpp/archive/refs/heads/master.zip -O
 RUN unzip /master.zip -d /
 RUN cp -rf /llama.cpp-master/* /app/
 
-ENV LLAMA_CURL=1
+RUN if [ "${GGML_SYCL_F16}" = "ON" ]; then \
+        echo "GGML_SYCL_F16 is set" && \
+        export OPT_SYCL_F16="-DGGML_SYCL_F16=ON"; \
+    fi && \
+    echo "Building with dynamic libs" && \
+    cmake -B build -DGGML_NATIVE=OFF -DGGML_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_CURL=ON ${OPT_SYCL_F16} && \
+    cmake --build build --config Release --target llama-server
 
-RUN make -j$(nproc) llama-server
-
-FROM ubuntu:$UBUNTU_VERSION AS runtime
+FROM intel/oneapi-basekit:$ONEAPI_VERSION AS runtime
 
 RUN apt-get update && \
-    apt-get install -y libcurl4-openssl-dev libgomp1 curl
+    apt-get install -y libcurl4-openssl-dev curl
 
-COPY --from=build /app/llama-server /llama-server
+COPY --from=build /app/build/bin/llama-server /llama-server
 
 ENV LC_ALL=C.utf8
 # Must be set to 0.0.0.0 so it can listen to requests from host machine
