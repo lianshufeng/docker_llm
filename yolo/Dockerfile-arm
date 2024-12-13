@@ -34,7 +34,7 @@ RUN apt-get update && \
 WORKDIR /opt/src
 
 # source
-ADD ../ /opt/src
+ADD ./ /opt/src
 RUN bash install.cmd
 # RUN pip install --no-cache-dir -r /opt/src/requirements.txt
 
