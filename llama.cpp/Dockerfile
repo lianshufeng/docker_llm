@@ -1,4 +1,5 @@
 ARG ONEAPI_VERSION=2025.0.0-0-devel-ubuntu22.04
+ARG UBUNTU_VERSION=22.04
 
 FROM intel/oneapi-basekit:$ONEAPI_VERSION AS build
 
@@ -21,10 +22,11 @@ RUN if [ "${GGML_SYCL_F16}" = "ON" ]; then \
     cmake -B build -DGGML_NATIVE=OFF -DGGML_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_CURL=ON ${OPT_SYCL_F16} && \
     cmake --build build --config Release --target llama-server
 
-FROM intel/oneapi-basekit:$ONEAPI_VERSION AS runtime
+
+FROM ubuntu:$UBUNTU_VERSION AS runtime
 
 RUN apt-get update && \
-    apt-get install -y libcurl4-openssl-dev curl
+    apt-get install -y libcurl4-openssl-dev libgomp1 curl
 
 COPY --from=build /app/build/bin/llama-server /llama-server
 
