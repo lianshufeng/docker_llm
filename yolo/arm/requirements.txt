@@ -1,8 +1,0 @@
-# https://github.com/ultralytics/ultralytics
-# python 3.9+
-
-
-ultralytics
-
-flask
-flask_cors
