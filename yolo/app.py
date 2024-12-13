@@ -1,3 +1,4 @@
+import time
 from argparse import ArgumentParser
 
 import cv2
@@ -43,6 +44,11 @@ def detect():
 
     # 将图片流转换为OpenCV格式
     img_bytes = file.read()
+
+    # 将图片保存到磁盘上,文件名取格林威治时间
+    # with open('c:/output/'+str(int(round(time.time() * 1000)))+'.jpg', 'wb') as f:
+    #     f.write(img_bytes)
+    #
     np_arr = np.frombuffer(img_bytes, np.uint8)
     img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
