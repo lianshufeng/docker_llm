@@ -1,11 +1,9 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
-# Builds ultralytics/ultralytics:latest-arm64 image on DockerHub https://hub.docker.com/r/ultralytics/ultralytics
-# Image is aarch64-compatible for Apple M1, M2, M3, Raspberry Pi and other ARM architectures
+# Builds ultralytics/ultralytics:latest-cpu image on DockerHub https://hub.docker.com/r/ultralytics/ultralytics
+# Image is CPU-optimized for ONNX, OpenVINO and PyTorch YOLO11 deployments
 
-# Start FROM Ubuntu image https://hub.docker.com/_/ubuntu with "FROM arm64v8/ubuntu:22.04" (deprecated)
-# Start FROM Debian image for arm64v8 https://hub.docker.com/r/arm64v8/debian (new)
-FROM --platform=linux/arm64 arm64v8/debian:bookworm-slim
-COPY qemu-aarch64-static /usr/bin/
+# Use official Python base image for reproducibility (3.11.10 for export and 3.12.6 for inference)
+FROM python:3.11.10-slim-bookworm
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -20,13 +18,10 @@ ADD https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.ttf \
 
 # Install linux packages
 # g++ required to build 'tflite_support' and 'lap' packages, libusb-1.0-0 required for 'tflite_support' package
-# pkg-config and libhdf5-dev (not included) are needed to build 'h5py==3.11.0' aarch64 wheel required by 'tensorflow'
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3-pip git zip unzip wget curl htop gcc libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0 \
+    python3-pip git zip unzip wget curl htop libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
-
-
 
 # requirements.txt
 

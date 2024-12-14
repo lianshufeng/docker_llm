@@ -39,8 +39,8 @@ WORKDIR /opt/src
 
 # source
 ADD ./ /opt/src
-RUN bash install.cmd
-# RUN pip install --no-cache-dir -r /opt/src/requirements.txt
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+RUN pip install -r requirements.txt
 
 # run
 CMD ["python","/opt/src/app.py"]
