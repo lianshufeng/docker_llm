@@ -1,4 +1,6 @@
 __pycache__
 
+/runs/
+
 yolo*.pt
 models.pt

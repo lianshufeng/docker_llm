@@ -1,4 +1,3 @@
-import time
 from argparse import ArgumentParser
 
 import cv2
@@ -15,7 +14,10 @@ def load_model():
     global model, args
     # 加载YOLOv10模型
     model = YOLO(args.model)
-    model.to(args.device)
+
+    # args.device 不能为 None
+    if args.device != None:
+        model.to(args.device)
 
 
 def _get_args():
@@ -26,7 +28,7 @@ def _get_args():
                         help='Checkpoint name or path, default to %(default)r')
     parser.add_argument('--device',
                         type=str,
-                        default='cuda',
+                        default=None,
                         help='cuda or cpu')
     parser.add_argument('--server-port', type=int, default=5000, help='server port.')
     parser.add_argument('--server-name', type=str, default='0.0.0.0', help='server name.')
@@ -59,16 +61,29 @@ def detect():
     labels = results.names
     detected_objects = []
 
-    # 遍历 results.boxes
-    for box in results.boxes:
-        xyxy = box[0].xyxy
-        conf = box[0].conf
-        cls = box[0].cls
-        detected_objects.append({
+    # 处理结果
+    for result in results:
+        box = result.boxes
+        xyxy = box.xyxy
+        conf = box.conf
+        cls = box.cls
+
+        # 返回结果
+        ret = {
             'label': labels[int(cls)],
             'confidence': conf.item(),
             'bounding_box': [int(xyxy[0][0]), int(xyxy[0][1]), int(xyxy[0][2]), int(xyxy[0][3])]
-        })
+        }
+
+        # 获取关键点
+        if result.keypoints != None:
+            keypoints = []
+            for kpt in result.keypoints.cpu().numpy()[0]:
+                for xy in kpt.xy[0]:
+                    keypoints.append([int(xy[0]), int(xy[1])])
+            ret['keypoints'] = keypoints
+
+        detected_objects.append(ret)
 
     # 返回检测结果
     return jsonify({'detected_objects': detected_objects})
