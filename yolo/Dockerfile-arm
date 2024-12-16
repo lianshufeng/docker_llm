@@ -26,7 +26,8 @@ RUN apt-get update && \
     python3-pip git zip unzip wget curl htop gcc libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-
+# python3 ->> python
+RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
 
 # requirements.txt
 
