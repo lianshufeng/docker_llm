@@ -26,7 +26,7 @@ RUN if [ "${GGML_SYCL_F16}" = "ON" ]; then \
 FROM ubuntu:$UBUNTU_VERSION AS runtime
 
 RUN apt-get update && \
-    apt-get install -y libcurl4-openssl-dev libgomp1 curl
+    apt-get install -y libcurl4-openssl-dev libgomp1 curl libllama
 
 COPY --from=build /app/build/bin/llama-server /llama-server
 
