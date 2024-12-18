@@ -1,0 +1,12 @@
+# python 3.9
+#tensorflow
+# pip uninstall -y tensorflow tensorflow-gpu tensorflow-estimator keras tensorflow-hub tensorflow-datasets tensorflow-keras tensorflow-intel
+
+deepface
+# tf-keras
+
+# 扩展库
+# mediapipe
+
+
+
