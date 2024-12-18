@@ -22,7 +22,7 @@ blueprint = Blueprint("routes", __name__)
 # 加载 OpenCV 的人脸检测分类器
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-default_face_size = 64
+default_face_size = 128
 
 
 @blueprint.route("/")
@@ -85,7 +85,7 @@ def represent():
     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
 
     try:
-        img = extract_image_from_request("img", input_args.get("face_size", default_face_size))
+        img = extract_image_from_request("img", int(input_args.get("face_size", default_face_size)))
     except Exception as err:
         return {"exception": str(err)}, 400
 
