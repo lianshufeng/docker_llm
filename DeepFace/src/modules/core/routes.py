@@ -30,7 +30,8 @@ def home():
     return f"<h1>Welcome to DeepFace API v{DeepFace.__version__}!</h1>"
 
 
-def extract_image_from_request(img_key: str, faceSize: int = default_face_size) -> Union[str, np.ndarray]:
+def extract_image_from_request(img_key: str, faceSize: int = default_face_size, keepSourceImage: bool = False) -> Union[
+    str, np.ndarray]:
     """
     Extracts an image from the request either from json or a multipart/form-data file.
 
@@ -55,7 +56,7 @@ def extract_image_from_request(img_key: str, faceSize: int = default_face_size) 
         if file.filename == "":
             raise ValueError(f"No file uploaded for '{img_key}'")
 
-        img = imdecode(file, faceSize)
+        img = imdecode(file, faceSize, keepSourceImage)
         # 判断非None
         if img is None:
             raise ValueError(f"Images doesn't have face in {img_key}")
@@ -85,7 +86,7 @@ def represent():
     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
 
     try:
-        img = extract_image_from_request("img", int(input_args.get("face_size", default_face_size)))
+        img = extract_image_from_request("img", int(input_args.get("face_size", default_face_size)),bool(input_args.get("keep_source_image", False)))
     except Exception as err:
         return {"exception": str(err)}, 400
 
@@ -177,17 +178,24 @@ def analyze():
 #     return imdecode(image_array)
 
 
-def imdecode(file: FileStorage, faceSize: int):
+def imdecode(file: FileStorage, faceSize: int, keepSourceImage: bool = False):
     image_array = np.asarray(bytearray(file.stream.read()), dtype=np.uint8)
-
     # 解码图片
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    # 保留原始图片不需要提取人脸
+    if keepSourceImage:
+        return image
+
+    # # 将图片转换为灰度图（用于人脸检测）
+    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # # 使用 Haar 分类器检测人脸
+    # faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(32, 32))
 
     # 将图片转换为灰度图（用于人脸检测）
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
+    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # 使用 Haar 分类器检测人脸
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    # faces = face_cascade.detectMultiScale(image, scaleFactor=1.05, minNeighbors=2, minSize=(20, 20))
+    faces = face_cascade.detectMultiScale(image, scaleFactor=1.05, minNeighbors=5, minSize=(32, 32))
 
     if len(faces) > 0:
         # 存储最大的面部
@@ -212,6 +220,10 @@ def imdecode(file: FileStorage, faceSize: int):
 
             # 压缩分辨率（可选）
             face_region = cv2.resize(face_region, (faceSize, faceSize))
+
+            # 显示人脸
+            # cv2.imshow("Face Detection", face_region)
+            # cv2.waitKey(0)
 
             return face_region
 
