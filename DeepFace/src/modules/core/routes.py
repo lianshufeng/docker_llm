@@ -1,5 +1,4 @@
 # built-in dependencies
-from typing import Any
 
 import cv2
 import numpy as np
@@ -109,9 +108,11 @@ def represent():
 
     logger.debug(obj)
 
-    obj['scale'] = scale
-    obj['detector_backend'] = detector_backend
-    obj['model_name'] = model_name
+    # 判断obj 不为数组
+    if type(obj) is not tuple:
+        obj['scale'] = scale
+        obj['detector_backend'] = detector_backend
+        obj['model_name'] = model_name
 
     return obj
 
@@ -195,7 +196,9 @@ def imageCode(image: np.ndarray, image_max_size: int):
     # 解码图片
     # image = cv2.imdecode(buf, cv2.IMREAD_COLOR)
 
-    # 测试代码，全部转换为640
+    #  去噪：应用高斯模糊
+    # image = cv2.GaussianBlur(image, (5, 5), 0)
+
     # 获取图像的原始宽度和高度
     height, width = image.shape[:2]
 
