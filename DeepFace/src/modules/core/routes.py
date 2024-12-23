@@ -27,7 +27,7 @@ default_image_max_size = 640
 #     return f"<h1>Welcome to DeepFace API v{DeepFace.__version__}!</h1>"
 
 
-def extract_image_from_request(img_key: str, image_max_size: int) -> tuple[Any, float]:
+def extract_image_from_request(img_key: str, image_max_size: int) -> [np.ndarray, float]:
     """
     Extracts an image from the request either from json or a multipart/form-data file.
 
@@ -38,6 +38,8 @@ def extract_image_from_request(img_key: str, image_max_size: int) -> tuple[Any, 
     Returns:
         img (str or np.ndarray): Given image detail (base64 encoded string, image path or url)
             or the decoded image as a numpy array.
+            :param img_key:
+            :param image_max_size:
     """
 
     # Check if the request is multipart/form-data (file input)
