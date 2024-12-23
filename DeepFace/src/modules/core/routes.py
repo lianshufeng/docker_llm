@@ -1,4 +1,5 @@
 # built-in dependencies
+import time
 from typing import Union
 
 import cv2
@@ -14,10 +15,7 @@ from werkzeug.datastructures import FileStorage
 
 logger = Logger()
 
-blueprint = Blueprint("routes", __name__)
-
-# pylint: disable=no-else-return, broad-except
-
+blueprint2 = Blueprint("routes/v2", __name__)
 
 # 加载 OpenCV 的人脸检测分类器
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -25,9 +23,9 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 default_face_size = 128
 
 
-@blueprint.route("/")
-def home():
-    return f"<h1>Welcome to DeepFace API v{DeepFace.__version__}!</h1>"
+# @blueprint2.route("/")
+# def home():
+#     return f"<h1>Welcome to DeepFace API v{DeepFace.__version__}!</h1>"
 
 
 def extract_image_from_request(img_key: str, faceSize: int = default_face_size, keepSourceImage: bool = False) -> Union[
@@ -81,12 +79,15 @@ def extract_image_from_request(img_key: str, faceSize: int = default_face_size, 
     raise ValueError(f"'{img_key}' not found in request in either json or form data")
 
 
-@blueprint.route("/represent", methods=["POST"])
+@blueprint2.route("/v2/represent", methods=["POST"])
 def represent():
     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
 
+    face_size = int(input_args.get("face_size", default_face_size))
+    keep_source_image = bool(input_args.get("keep_source_image", False))
+
     try:
-        img = extract_image_from_request("img", int(input_args.get("face_size", default_face_size)),bool(input_args.get("keep_source_image", False)))
+        img = extract_image_from_request("img", face_size, keep_source_image)
     except Exception as err:
         return {"exception": str(err)}, 400
 
@@ -94,10 +95,10 @@ def represent():
         img_path=img,
         model_name=input_args.get("model_name", "VGG-Face"),
         detector_backend=input_args.get("detector_backend", "opencv"),
-        enforce_detection=input_args.get("enforce_detection", True),
-        align=input_args.get("align", True),
-        anti_spoofing=input_args.get("anti_spoofing", False),
-        max_faces=input_args.get("max_faces"),
+        enforce_detection=bool(input_args.get("enforce_detection", True)),
+        align=bool(input_args.get("align", True)),
+        anti_spoofing=bool(input_args.get("anti_spoofing", False)),
+        max_faces=int(input_args.get("max_faces", 1)),
     )
 
     logger.debug(obj)
@@ -105,72 +106,73 @@ def represent():
     return obj
 
 
-@blueprint.route("/verify", methods=["POST"])
-def verify():
-    input_args = (request.is_json and request.get_json()) or request.form.to_dict()
-
-    try:
-        img1 = extract_image_from_request("img1")
-    except Exception as err:
-        return {"exception": str(err)}, 400
-
-    try:
-        img2 = extract_image_from_request("img2")
-    except Exception as err:
-        return {"exception": str(err)}, 400
-
-    verification = service.verify(
-        img1_path=img1,
-        img2_path=img2,
-        model_name=input_args.get("model_name", "VGG-Face"),
-        detector_backend=input_args.get("detector_backend", "opencv"),
-        distance_metric=input_args.get("distance_metric", "cosine"),
-        align=input_args.get("align", True),
-        enforce_detection=input_args.get("enforce_detection", True),
-        anti_spoofing=input_args.get("anti_spoofing", False),
-    )
-
-    logger.debug(verification)
-
-    return verification
-
-
-@blueprint.route("/analyze", methods=["POST"])
-def analyze():
-    input_args = (request.is_json and request.get_json()) or request.form.to_dict()
-
-    try:
-        img = extract_image_from_request("img")
-    except Exception as err:
-        return {"exception": str(err)}, 400
-
-    actions = input_args.get("actions", ["age", "gender", "emotion", "race"])
-    # actions is the only argument instance of list or tuple
-    # if request is form data, input args can either be text or file
-    if isinstance(actions, str):
-        actions = (
-            actions.replace("[", "")
-            .replace("]", "")
-            .replace("(", "")
-            .replace(")", "")
-            .replace('"', "")
-            .replace("'", "")
-            .replace(" ", "")
-            .split(",")
-        )
-
-    demographies = service.analyze(
-        img_path=img,
-        actions=actions,
-        detector_backend=input_args.get("detector_backend", "opencv"),
-        enforce_detection=input_args.get("enforce_detection", True),
-        align=input_args.get("align", True),
-        anti_spoofing=input_args.get("anti_spoofing", False),
-    )
-
-    logger.debug(demographies)
-
-    return demographies
+#
+# @blueprint2.route("/v2/verify", methods=["POST"])
+# def verify():
+#     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
+#
+#     try:
+#         img1 = extract_image_from_request("img1")
+#     except Exception as err:
+#         return {"exception": str(err)}, 400
+#
+#     try:
+#         img2 = extract_image_from_request("img2")
+#     except Exception as err:
+#         return {"exception": str(err)}, 400
+#
+#     verification = service.verify(
+#         img1_path=img1,
+#         img2_path=img2,
+#         model_name=input_args.get("model_name", "VGG-Face"),
+#         detector_backend=input_args.get("detector_backend", "opencv"),
+#         distance_metric=input_args.get("distance_metric", "cosine"),
+#         align=input_args.get("align", True),
+#         enforce_detection=input_args.get("enforce_detection", True),
+#         anti_spoofing=input_args.get("anti_spoofing", False),
+#     )
+#
+#     logger.debug(verification)
+#
+#     return verification
+#
+#
+# @blueprint2.route("/v2/analyze", methods=["POST"])
+# def analyze():
+#     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
+#
+#     try:
+#         img = extract_image_from_request("img")
+#     except Exception as err:
+#         return {"exception": str(err)}, 400
+#
+#     actions = input_args.get("actions", ["age", "gender", "emotion", "race"])
+#     # actions is the only argument instance of list or tuple
+#     # if request is form data, input args can either be text or file
+#     if isinstance(actions, str):
+#         actions = (
+#             actions.replace("[", "")
+#             .replace("]", "")
+#             .replace("(", "")
+#             .replace(")", "")
+#             .replace('"', "")
+#             .replace("'", "")
+#             .replace(" ", "")
+#             .split(",")
+#         )
+#
+#     demographies = service.analyze(
+#         img_path=img,
+#         actions=actions,
+#         detector_backend=input_args.get("detector_backend", "opencv"),
+#         enforce_detection=input_args.get("enforce_detection", True),
+#         align=input_args.get("align", True),
+#         anti_spoofing=input_args.get("anti_spoofing", False),
+#     )
+#
+#     logger.debug(demographies)
+#
+#     return demographies
 
 
 # def load_image_from_file_storage(file: FileStorage):
@@ -194,8 +196,11 @@ def imdecode(file: FileStorage, faceSize: int, keepSourceImage: bool = False):
     # 将图片转换为灰度图（用于人脸检测）
     # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # 使用 Haar 分类器检测人脸
-    # faces = face_cascade.detectMultiScale(image, scaleFactor=1.05, minNeighbors=2, minSize=(20, 20))
-    faces = face_cascade.detectMultiScale(image, scaleFactor=1.05, minNeighbors=5, minSize=(32, 32))
+    startTime = time.time()
+    faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=2, minSize=(20, 20))
+    print(time.time() - startTime)
+
+    # faces = face_cascade.detectMultiScale(image, scaleFactor=1.05, minNeighbors=5, minSize=(32, 32))
 
     if len(faces) > 0:
         # 存储最大的面部
