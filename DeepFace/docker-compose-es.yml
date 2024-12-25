@@ -1,0 +1,41 @@
+services:
+  elasticsearch:
+    image: elasticsearch:${es_version}
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms512m -Xmx1024m
+      - xpack.security.enabled=false
+    volumes:
+      - ${store}/data:/usr/share/elasticsearch/data
+#      - ${store}/ik:/usr/share/elasticsearch/plugins/ik
+    networks:
+      - es_network
+    ports:
+      - 9200:9200
+      - 9300:9300
+  kibana:
+    image: kibana:${es_version}
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}
+    ports:
+      - 5601:5601
+    networks:
+      - es_network
+    depends_on:
+      - elasticsearch
+
+networks:
+  es_network:
+    driver: bridge
+
+
+#分词库
+# elasticsearch-plugin install https://get.infini.cloud/elasticsearch/analysis-ik/8.6.0
+
+#查看进度
+#curl http://127.0.0.1:9200/_cat/health
+
+#访问kibana

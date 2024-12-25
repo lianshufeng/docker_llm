@@ -1,7 +1,5 @@
 services:
   deepface:
-#    image: serengil/deepface
-#     image: tensorflow/tensorflow:2.11.0-gpu
     image: lianshufeng/llm:deepface
     container_name: deepface
     volumes:
@@ -11,6 +9,8 @@ services:
     ports:
       - "5000:5000"
     environment:
+      - ELASTIC_PASSWORD=es7896@2025
+      - ELASTICSEARCH_HOSTS=http://127.0.0.1:9200
       - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
 #    working_dir: /opt/src
 #    command: python app.py --device=cuda #cpu

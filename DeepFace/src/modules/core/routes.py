@@ -1,4 +1,5 @@
 # built-in dependencies
+import os
 
 import cv2
 import numpy as np
@@ -6,12 +7,14 @@ import numpy as np
 from deepface.api.src.modules.core import service
 from deepface.commons.image_utils import load_image
 from deepface.commons.logger import Logger
+from elasticsearch import Elasticsearch
 # from deepface.commons import image_utils
 # 3rd party dependencies
 from flask import Blueprint, request
 
-logger = Logger()
+es_client = None
 
+logger = Logger()
 blueprint2 = Blueprint("routes/v2", __name__)
 
 # 加载 OpenCV 的人脸检测分类器
@@ -19,6 +22,9 @@ blueprint2 = Blueprint("routes/v2", __name__)
 
 # 设置最大尺寸
 default_image_max_size = 640
+
+# 创建索引
+index_name = "faces"
 
 
 # @blueprint2.route("/")
@@ -84,16 +90,14 @@ def extract_image_from_request(img_key: str, image_max_size: int) -> [np.ndarray
 def represent():
     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
 
-    # face_size = int(input_args.get("face_size", default_face_size))
-    # keep_source_image = bool(input_args.get("keep_source_image", False))
-
     image_max_size = int(input_args.get("image_max_size", default_image_max_size))
     detector_backend = input_args.get("detector_backend", "yunet")  # opencv
-    model_name = input_args.get("model_name", "VGG-Face")
+    model_name = input_args.get("model_name", "ArcFace") #VGG-Face
 
     try:
         img, scale = extract_image_from_request("img", image_max_size)
     except Exception as err:
+        print(err)
         return {"exception": str(err)}, 400
 
     obj = service.represent(
@@ -115,80 +119,6 @@ def represent():
         obj['model_name'] = model_name
 
     return obj
-
-
-#
-# @blueprint2.route("/v2/verify", methods=["POST"])
-# def verify():
-#     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
-#
-#     try:
-#         img1 = extract_image_from_request("img1")
-#     except Exception as err:
-#         return {"exception": str(err)}, 400
-#
-#     try:
-#         img2 = extract_image_from_request("img2")
-#     except Exception as err:
-#         return {"exception": str(err)}, 400
-#
-#     verification = service.verify(
-#         img1_path=img1,
-#         img2_path=img2,
-#         model_name=input_args.get("model_name", "VGG-Face"),
-#         detector_backend=input_args.get("detector_backend", "opencv"),
-#         distance_metric=input_args.get("distance_metric", "cosine"),
-#         align=input_args.get("align", True),
-#         enforce_detection=input_args.get("enforce_detection", True),
-#         anti_spoofing=input_args.get("anti_spoofing", False),
-#     )
-#
-#     logger.debug(verification)
-#
-#     return verification
-#
-#
-# @blueprint2.route("/v2/analyze", methods=["POST"])
-# def analyze():
-#     input_args = (request.is_json and request.get_json()) or request.form.to_dict()
-#
-#     try:
-#         img = extract_image_from_request("img")
-#     except Exception as err:
-#         return {"exception": str(err)}, 400
-#
-#     actions = input_args.get("actions", ["age", "gender", "emotion", "race"])
-#     # actions is the only argument instance of list or tuple
-#     # if request is form data, input args can either be text or file
-#     if isinstance(actions, str):
-#         actions = (
-#             actions.replace("[", "")
-#             .replace("]", "")
-#             .replace("(", "")
-#             .replace(")", "")
-#             .replace('"', "")
-#             .replace("'", "")
-#             .replace(" ", "")
-#             .split(",")
-#         )
-#
-#     demographies = service.analyze(
-#         img_path=img,
-#         actions=actions,
-#         detector_backend=input_args.get("detector_backend", "opencv"),
-#         enforce_detection=input_args.get("enforce_detection", True),
-#         align=input_args.get("align", True),
-#         anti_spoofing=input_args.get("anti_spoofing", False),
-#     )
-#
-#     logger.debug(demographies)
-#
-#     return demographies
-
-
-# def load_image_from_file_storage(file: FileStorage):
-#     image_array = np.asarray(bytearray(file.stream.read()), dtype=np.uint8)
-#     return imdecode(image_array)
 
 
 def imageCode(image: np.ndarray, image_max_size: int):
@@ -222,49 +152,96 @@ def imageCode(image: np.ndarray, image_max_size: int):
 
     return image, scale
 
-    # # 将图片转换为灰度图（用于人脸检测）
-    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # # 使用 Haar 分类器检测人脸
-    # faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(32, 32))
 
-    # 将图片转换为灰度图（用于人脸检测）
-    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # 使用 Haar 分类器检测人脸
-    # startTime = time.time()
-    # faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=2, minSize=(20, 20))
-    # print(time.time() - startTime)
-    #
-    # # faces = face_cascade.detectMultiScale(image, scaleFactor=1.05, minNeighbors=5, minSize=(32, 32))
-    #
-    # if len(faces) > 0:
-    #     # 存储最大的面部
-    #     largest_face = None
-    #     max_area = 0
-    #
-    #     # 遍历所有检测到的人脸
-    #     for (x, y, w, h) in faces:
-    #         # 计算每张人脸的面积
-    #         area = w * h
-    #
-    #         # 选择面积最大的（即离摄像头最近的）人脸
-    #         if area > max_area:
-    #             max_area = area
-    #             largest_face = (x, y, w, h)
-    #
-    #     # 如果找到了最大的（最靠近的）人脸
-    #     if largest_face:
-    #         (x, y, w, h) = largest_face
-    #         # 裁剪出最大的人脸区域
-    #         face_region = image[y:y + h, x:x + w]
-    #
-    #         # 压缩分辨率（可选）
-    #         face_region = cv2.resize(face_region, (faceSize, faceSize))
-    #
-    #         # 显示人脸
-    #         # cv2.imshow("Face Detection", face_region)
-    #         # cv2.waitKey(0)
-    #
-    #         return face_region
-    #
-    # # 如果没有检测到任何人脸，返回 None
-    # return None
+# 连接到 Elasticsearch
+def get_es_client():
+    global es_client
+    if es_client is not None:
+        return es_client
+    # 读取环境变量
+    es_hosts = os.getenv('ELASTICSEARCH_HOSTS')
+    es_password = os.getenv('ELASTIC_PASSWORD')
+    #  通过http的方式来连接
+    es_client = Elasticsearch(
+        [es_hosts],  # Elasticsearch服务器的URL
+        http_auth=("elastic", es_password),  # 如果你的Elasticsearch有认证
+    )
+    # 测试连接
+    if es_client.ping():
+        print("es 连接成功")
+    else:
+        es_client == None
+        print("es 连接失败")
+        return None
+
+    if not es_client.indices.exists(index=index_name):
+        es_client.indices.create(index=index_name, body={
+            "mappings": {
+                "properties": {
+                    "face_vector": {
+                        "type": "dense_vector",
+                        "dims": 512  # DeepFace
+                    }
+                }
+            }
+        })
+        print("es 索引创建成功")
+    return es_client
+
+
+@blueprint2.route("/v2/put", methods=["POST"])
+def put():
+    input_args = (request.is_json and request.get_json()) or request.form.to_dict()
+    key = input_args.get("key", None)
+    if key is None:
+        return {"error": "key is not none"}, 400
+
+    try:
+        es_client = get_es_client()
+        rep = represent()
+        embedding = rep['results'][0]['embedding']
+
+        doc = {
+            "face_vector": embedding
+        }
+        # 将向量存储到 Elasticsearch
+        es_client.index(index=index_name, document=doc)
+
+    except Exception as err:
+        print(err)
+        return {"exception": str(err)}, 400
+
+    return rep
+
+
+@blueprint2.route("/v2/search", methods=["POST"])
+def search():
+    input_args = (request.is_json and request.get_json()) or request.form.to_dict()
+
+    try:
+        es_client = get_es_client()
+
+        # 查询 Elasticsearch 中的所有文档
+        # body = {
+        #     "size": 5,  # 返回最相似的前 5 个
+        #     "_source": False,  # 只返回向量部分
+        #     "query": {
+        #         "knn": {
+        #             "face_vector": {
+        #                 "vector": query_vector.tolist(),
+        #                 "k": 5  # k 值，表示检索的最近邻个数
+        #             }
+        #         }
+        #     }
+        # }
+        #
+        # res = es.search(index=index_name, body=body)
+        # for hit in res['hits']['hits']:
+        #     print("Similarity score:", hit['_score'])
+        #     print(hit['_id'])
+
+    except Exception as err:
+        print(err)
+        return {"exception": str(err)}, 400
+
+    return input_args
