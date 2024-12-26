@@ -25,8 +25,8 @@ services:
       - ./dataset:/app/dataset
     restart: always
     environment:
-      - ELASTIC_PASSWORD=es7896@2025
-      - ELASTICSEARCH_HOSTS=http://127.0.0.1:9200
+      - ELASTIC_PASSWORD=es7896@2025 #es_password
+      - ELASTICSEARCH_HOSTS=http://host.docker.internal:9200 #es_host
       - CUDA_VISIBLE_DEVICES=0,1  # 多卡 0,1
     networks:
       - face_net
