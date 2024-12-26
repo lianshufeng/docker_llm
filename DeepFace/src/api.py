@@ -1,12 +1,13 @@
 import argparse
 
-from deepface import modules, DeepFace
+from deepface import DeepFace
 from deepface.api.src.modules.core.routes import blueprint
 from deepface.commons.logger import Logger
 from flask import Flask
 from flask_cors import CORS
 
 from modules.core.routes import blueprint2
+from modules.core.store import store
 
 logger = Logger()
 
@@ -17,6 +18,7 @@ def create_app():
 
     app.register_blueprint(blueprint)
     app.register_blueprint(blueprint2)
+    app.register_blueprint(store)
 
 
 
