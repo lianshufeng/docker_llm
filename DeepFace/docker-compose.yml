@@ -1,23 +1,50 @@
 services:
+  traefik:
+    image: traefik:v3.2.3
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entryPoints.http.address=:80"
+      - "--entryPoints.https.address=:443"
+      - "--entryPoints.traefik.address=:8080"
+      - "--entryPoints.http.forwardedHeaders.insecure=true"  # 可选
+    ports:
+      - "5000:80"      # HTTP
+#      - "443:443"      # HTTP
+#      - "8080:8080"    # Traefik 仪表盘
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"  # 允许 Traefik 监控 Docker 容器
+    networks:
+      - face_net
+
   deepface:
     image: lianshufeng/llm:deepface
-    container_name: deepface
     volumes:
       - ./weights:/root/.deepface/weights
       - ./dataset:/app/dataset
     restart: always
-    ports:
-      - "5000:5000"
     environment:
       - ELASTIC_PASSWORD=es7896@2025
       - ELASTICSEARCH_HOSTS=http://127.0.0.1:9200
-      - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
-#    working_dir: /opt/src
-#    command: python app.py --device=cuda #cpu
+      - CUDA_VISIBLE_DEVICES=0,1  # 多卡 0,1
+    networks:
+      - face_net
+    labels:
+      - "traefik.enable=true"
+#      - "traefik.http.routers.deepface.rule=Host(`192.168.32.113`)"
+      - "traefik.http.routers.deepface.rule=PathPrefix(`/`)"  # 匹配任何路径
+      - "traefik.http.routers.deepface.entryPoints=http"  # 明确指定使用 http entryPoint
+      - "traefik.http.services.deepface.loadbalancer.server.port=5000"  # 指定服务的端口
     deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: "all"
-              capabilities: [gpu]
+      replicas: 2  # 负载数量
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: "all"
+#              capabilities: [gpu]
+
+networks:
+  face_net:
+    driver: bridge

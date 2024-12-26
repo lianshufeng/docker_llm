@@ -1,4 +1,5 @@
 # built-in dependencies
+import threading
 
 import cv2
 import numpy as np
@@ -15,10 +16,11 @@ es_client = {}
 logger = Logger()
 blueprint2 = Blueprint("routes/v2", __name__)
 
-
 # 设置最大尺寸
 default_image_max_size = 640
 
+# 创建一个全局锁
+lock = threading.Lock()
 
 
 # @blueprint2.route("/")
@@ -81,42 +83,45 @@ def extract_image_from_request(img_key: str, image_max_size: int) -> [np.ndarray
 
 
 def modelName(input_args):
-    return input_args.get("model_name", "ArcFace")
+    return input_args.get("model_name", "ArcFace")  # VGG-Face ArcFace
+    # return input_args.get("model_name", "VGG-Face")  # VGG-Face ArcFace
 
 
 @blueprint2.route("/v2/represent", methods=["POST"])
 def represent():
-    input_args = (request.is_json and request.get_json()) or request.form.to_dict()
+    # 获取锁
+    with lock:
+        input_args = (request.is_json and request.get_json()) or request.form.to_dict()
 
-    image_max_size = int(input_args.get("image_max_size", default_image_max_size))
-    detector_backend = input_args.get("detector_backend", "yunet")  # opencv
-    model_name = modelName(input_args)  # VGG-Face
+        image_max_size = int(input_args.get("image_max_size", default_image_max_size))
+        detector_backend = input_args.get("detector_backend", "yunet")  # opencv
+        model_name = modelName(input_args)  # VGG-Face
 
-    try:
-        img, scale = extract_image_from_request("img", image_max_size)
-    except Exception as err:
-        print(err)
-        return {"exception": str(err)}, 400
+        try:
+            img, scale = extract_image_from_request("img", image_max_size)
+        except Exception as err:
+            print(err)
+            return {"exception": str(err)}, 400
 
-    obj = service.represent(
-        img_path=img,
-        model_name=model_name,
-        detector_backend=detector_backend,
-        enforce_detection=bool(input_args.get("enforce_detection", True)),
-        align=bool(input_args.get("align", True)),
-        anti_spoofing=bool(input_args.get("anti_spoofing", False)),
-        max_faces=int(input_args.get("max_faces", 1)),
-    )
+        obj = service.represent(
+            img_path=img,
+            model_name=model_name,
+            detector_backend=detector_backend,
+            enforce_detection=bool(input_args.get("enforce_detection", True)),
+            align=bool(input_args.get("align", True)),
+            anti_spoofing=bool(input_args.get("anti_spoofing", False)),
+            max_faces=int(input_args.get("max_faces", 1)),
+        )
 
-    logger.debug(obj)
+        logger.debug(obj)
 
-    # 判断obj 不为数组
-    if type(obj) is not tuple:
-        obj['scale'] = scale
-        obj['detector_backend'] = detector_backend
-        obj['model_name'] = model_name
+        # 判断obj 不为数组
+        if type(obj) is not tuple:
+            obj['scale'] = scale
+            obj['detector_backend'] = detector_backend
+            obj['model_name'] = model_name
 
-    return obj
+    return obj, 200
 
 
 def imageCode(image: np.ndarray, image_max_size: int):
@@ -145,5 +150,3 @@ def imageCode(image: np.ndarray, image_max_size: int):
     # cv2.waitKey(0)
 
     return image, scale
-
-

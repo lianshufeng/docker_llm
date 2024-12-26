@@ -11,6 +11,7 @@ from elasticsearch import Elasticsearch, NotFoundError
 # 3rd party dependencies
 from flask import Blueprint, request
 
+from .routes import modelName
 from .routes import represent
 
 es_client = {}
@@ -25,10 +26,8 @@ default_image_max_size = 640
 index_pre_name = "faces"
 
 
-
-def modelName(input_args):
-    return input_args.get("model_name", "ArcFace")
-
+def indexName(model_name):
+    return (index_pre_name + "_" + model_name).lower()
 
 
 def imageCode(image: np.ndarray, image_max_size: int):
@@ -57,10 +56,6 @@ def imageCode(image: np.ndarray, image_max_size: int):
     # cv2.waitKey(0)
 
     return image, scale
-
-
-def indexName(model_name):
-    return (index_pre_name + "_" + model_name).lower()
 
 
 def create_es_client():
@@ -133,7 +128,9 @@ def put():
 
     try:
         rep = represent()
-        embedding = rep['results'][0]['embedding']
+        if rep[1] is not 200:
+            return {"error": rep[0]}, rep[1]
+        embedding = rep[0]['results'][0]['embedding']
         es_client = get_es_client(model_name, len(embedding))
         es_client.index(index=index_name, id=key, document={
             "face_vector": embedding,
@@ -230,7 +227,9 @@ def search():
         recordTime = time.time()
         rep = represent()
         ret['time']['represent'] = float(time.time() - recordTime)
-        embedding = rep['results'][0]['embedding']
+        if rep[1] is not 200:
+            return {"error": rep[0]}, rep[1]
+        embedding = rep[0]['results'][0]['embedding']
 
         es_client = get_es_client(model_name, len(embedding))
 
