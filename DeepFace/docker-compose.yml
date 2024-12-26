@@ -10,7 +10,7 @@ services:
       - "--entryPoints.traefik.address=:8080"
       - "--entryPoints.http.forwardedHeaders.insecure=true"  # 可选
     ports:
-      - "5000:80"      # HTTP
+      - "5001:80"      # HTTP
 #      - "443:443"      # HTTP
 #      - "8080:8080"    # Traefik 仪表盘
     volumes:

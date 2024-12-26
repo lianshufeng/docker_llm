@@ -86,9 +86,7 @@ def get_es_client(model_name: str, dims: int) -> Elasticsearch:
 
     # 测试连接
     if not client.ping():
-        client == None
-        print("es 连接失败")
-        return None
+        raise ValueError(f"es connenction failed")
 
     print("es 连接成功")
 
