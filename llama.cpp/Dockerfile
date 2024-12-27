@@ -20,7 +20,7 @@ WORKDIR /app
 RUN apt-get install -y wget unzip 
 RUN wget https://github.com/ggerganov/llama.cpp/archive/refs/heads/master.zip -O /master.zip 
 RUN unzip /master.zip -d /
-RUN cp -rf /llama.cpp-master/* /app/
+RUN cp -rf /llama.cpp-master/* /llama.cpp-master/.* /app/
 
 RUN if [ "${CUDA_DOCKER_ARCH}" != "default" ]; then \
     export CMAKE_ARGS="-DCMAKE_CUDA_ARCHITECTURES=${CUDA_DOCKER_ARCH}"; \
