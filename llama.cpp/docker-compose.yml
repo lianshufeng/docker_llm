@@ -1,11 +1,11 @@
 services:
   llama-server:
-    build:
-      args:
-        http_proxy: http://192.168.31.98:1080
-        https_proxy: http://192.168.31.98:1080
-      context: ./
-      dockerfile: Dockerfile  
+    # build:
+      # args:
+        # http_proxy: http://192.168.31.98:1080
+        # https_proxy: http://192.168.31.98:1080
+      # context: ./
+      # dockerfile: Dockerfile  
     image: lianshufeng/llm:llama-server
     container_name: llama-server
     volumes:
@@ -13,4 +13,11 @@ services:
     restart: always
     ports:
       - "8080:8080"
-    command: -m /model.gguf --port 8080 --host 0.0.0.0 -n 4096
+    command: -m /model.gguf --port 8080 --host 0.0.0.0 -n 4096 --n-gpu-layers 32
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

@@ -1,0 +1,1 @@
+docker build ./ -t lianshufeng/llm:llama-server
