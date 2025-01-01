@@ -4,3 +4,7 @@ __pycache__
 
 yolo*.pt
 models.pt
+
+/train/dataset
+/train/datasets
+/train/runs
