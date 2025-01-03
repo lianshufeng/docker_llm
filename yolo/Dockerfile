@@ -39,6 +39,8 @@ WORKDIR /opt/src
 
 # source
 ADD ./src /opt/src
+ADD ./requirements.txt /opt/src/requirements.txt
+
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 RUN pip install -r requirements.txt
 # TensorRT
