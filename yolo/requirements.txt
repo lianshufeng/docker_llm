@@ -6,5 +6,3 @@ ultralytics
 
 flask
 flask_cors
-
-onnx
