@@ -38,11 +38,11 @@ RUN apt upgrade --no-install-recommends -y openssl tar
 WORKDIR /opt/src
 
 # source
-ADD ./ /opt/src
+ADD ./src /opt/src
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 RUN pip install -r requirements.txt
 # TensorRT
-RUN pip install TensorRT
+RUN pip install TensorRT onnxslim onnxruntime-gpu
 
 # 设置数据集路径
 RUN yolo settings datasets_dir=/work

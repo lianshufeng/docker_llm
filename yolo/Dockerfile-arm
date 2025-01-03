@@ -35,7 +35,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 WORKDIR /opt/src
 
 # source
-ADD ./ /opt/src
+ADD ./src /opt/src
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install -r requirements.txt
 

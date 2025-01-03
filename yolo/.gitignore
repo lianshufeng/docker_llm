@@ -2,8 +2,8 @@ __pycache__
 
 /runs/
 
-yolo*.pt
-models.pt
+yolo*.*
+models.*
 
 /train/dataset
 /train/datasets
