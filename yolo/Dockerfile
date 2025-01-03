@@ -48,7 +48,7 @@ RUN pip install -r requirements.txt
 RUN yolo settings datasets_dir=/work
 
 # 安装 engine 环境
-RUN yolo export model=yolo11n.pt format=engine
+RUN yolo export model=yolo11n.pt format=engine device=cpu
 
 # run
 CMD ["python","/opt/src/app.py"]
