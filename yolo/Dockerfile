@@ -47,8 +47,8 @@ RUN pip install -r requirements.txt
 # 设置数据集路径
 RUN yolo settings datasets_dir=/work
 
-# 安装 engine 环境
-RUN yolo export model=yolo11n.pt format=engine device=cpu
+# TensorRT
+RUN pip install TensorRT onnxslim onnxruntime-gpu
 
 # run
 CMD ["python","/opt/src/app.py"]
