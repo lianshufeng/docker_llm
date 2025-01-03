@@ -41,6 +41,8 @@ WORKDIR /opt/src
 ADD ./ /opt/src
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 RUN pip install -r requirements.txt
+# TensorRT
+RUN pip install TensorRT
 
 # 设置数据集路径
 RUN yolo settings datasets_dir=/work
