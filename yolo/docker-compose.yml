@@ -9,14 +9,15 @@ services:
     image: lianshufeng/llm:yolo
     container_name: yolo
     volumes:
-      - ./models.pt:/opt/src/models.pt
+    #https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt
+      - ./:/models
     restart: always
     ports:
       - "5000:5000"
     environment:
       - CUDA_VISIBLE_DEVICES=0,1 # 多卡 0,1
-    working_dir: /opt/src
-    command: python app.py --device=cuda #cpu
+    working_dir: /models
+    command: python /opt/src/app.py --model=/models/yolo11n.pt
     deploy:
       resources:
         reservations:
@@ -24,3 +25,6 @@ services:
             - driver: nvidia
               count: "all"
               capabilities: [gpu]
+# 注： export engine | onnx , 需要在有GPU的环境里导出，并在gpu环境里运行，否则导出的 engine 模型会报错
+# docker run --gpus all --rm -it -v %CD%:/work  -w /work lianshufeng/llm:yolo bash yolo export model=yolo11n.pt format=onnx
+# docker run --gpus all --rm -it -v $(pwd):/work -w /work lianshufeng/llm:yolo bash yolo export model=yolo11n.pt format=engine

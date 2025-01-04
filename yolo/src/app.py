@@ -16,8 +16,8 @@ def load_model():
     model = YOLO(args.model)
 
     # args.device 不能为 None
-    if args.device != None:
-        model.to(args.device)
+    # if args.device != None:
+    #     model.to(args.device)
 
 
 def _get_args():
@@ -26,10 +26,10 @@ def _get_args():
                         type=str,
                         default='./models.pt',
                         help='Checkpoint name or path, default to %(default)r')
-    parser.add_argument('--device',
-                        type=str,
-                        default=None,
-                        help='cuda or cpu')
+    # parser.add_argument('--device',
+    #                     type=str,
+    #                     default=None,
+    #                     help='cuda or cpu')
     parser.add_argument('--server-port', type=int, default=5000, help='server port.')
     parser.add_argument('--server-name', type=str, default='0.0.0.0', help='server name.')
     return parser.parse_args()

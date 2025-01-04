@@ -48,7 +48,7 @@ RUN pip install -r requirements.txt
 RUN yolo settings datasets_dir=/work
 
 # TensorRT
-RUN pip install TensorRT onnxslim onnxruntime-gpu
+RUN pip install TensorRT onnxslim onnxruntime onnxruntime-gpu
 
 # run
 CMD ["python","/opt/src/app.py"]
