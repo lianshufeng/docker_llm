@@ -39,7 +39,7 @@ RUN pip install -r requirements.txt
 RUN yolo settings datasets_dir=/work
 
 # 安装 onnx 环境
-RUN yolo export model=yolo11n.pt format=onnx
+RUN yolo export model=yolo11n.pt format=onnx ; rm -rf yolo11n.pt yolo11n.onnx
 
 # run
 CMD ["python","/opt/src/app.py"]
