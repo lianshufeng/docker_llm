@@ -13,7 +13,14 @@ RUN wget https://github.com/ggerganov/llama.cpp/archive/refs/heads/master.zip -O
 RUN unzip /master.zip -d /
 RUN rsync -a /llama.cpp-master/ /app/
 
-RUN cmake -S . -B build -DGGML_BACKEND_DL=ON -DGGML_NATIVE=OFF -DGGML_CPU_ALL_VARIANTS=ON -DLLAMA_CURL=ON -DCMAKE_BUILD_TYPE=Release && \
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DLLAMA_BUILD_TESTS=OFF -DGGML_BACKEND_DL=ON -DGGML_CPU_ALL_VARIANTS=ON; \
+    elif [ "$TARGETARCH" = "arm64" ]; then \
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DLLAMA_BUILD_TESTS=OFF -DGGML_CPU_ARM_ARCH=${GGML_CPU_ARM_ARCH}; \
+    else \
+        echo "Unsupported architecture"; \
+        exit 1; \
+    fi && \
     cmake --build build -j $(nproc)
 
 RUN mkdir -p /app/lib && \
