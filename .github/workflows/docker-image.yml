@@ -1,16 +1,28 @@
-name: Docker Image CI
+name: Docker Image CI & Push
 
 on:
   push:
     branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker image in vllm directory
-        working-directory: vllm
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image (llama.cpp cpu)
+        working-directory: llama.cpp
         run: |
-          docker build -f Dockerfile-cuda12.1 -t vllm-cuda121:$(date +%s) .
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/llama-cpu:latest
+          docker build -f Dockerfile-cpu -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
