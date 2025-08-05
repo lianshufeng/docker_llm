@@ -21,20 +21,20 @@ jobs:
       - name: Build and push CPU image
         working-directory: llama.cpp
         run: |
-          IMAGE_NAME=lianshufeng/llama-server-cpu:latest
+          IMAGE_NAME=lianshufeng/llm:llama-server-cpu
           docker build -f Dockerfile-cpu -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
       - name: Build and push FULL image
         working-directory: llama.cpp
         run: |
-          IMAGE_NAME=lianshufeng/llama:latest
+          IMAGE_NAME=lianshufeng/llm:llama
           docker build -f Dockerfile-full -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
       - name: Build and push SERVER image
         working-directory: llama.cpp
         run: |
-          IMAGE_NAME=lianshufeng/llama-server:latest
+          IMAGE_NAME=lianshufeng/llm:llama-server
           docker build -f Dockerfile -t $IMAGE_NAME .
           docker push $IMAGE_NAME
