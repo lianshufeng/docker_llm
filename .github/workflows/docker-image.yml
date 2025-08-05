@@ -1,8 +1,6 @@
 name: Docker Image CI & Push
 
 on:
-  push:
-    branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
@@ -20,9 +18,23 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image (llama.cpp cpu)
+      - name: Build and push CPU image
         working-directory: llama.cpp
         run: |
-          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/llama-cpu:latest
+          IMAGE_NAME=lianshufeng/llama-server-cpu:latest
           docker build -f Dockerfile-cpu -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+
+      - name: Build and push FULL image
+        working-directory: llama.cpp
+        run: |
+          IMAGE_NAME=lianshufeng/llama:latest
+          docker build -f Dockerfile-full -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+
+      - name: Build and push SERVER image
+        working-directory: llama.cpp
+        run: |
+          IMAGE_NAME=lianshufeng/llama-server:latest
+          docker build -f Dockerfile -t $IMAGE_NAME .
           docker push $IMAGE_NAME
